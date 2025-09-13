@@ -8,10 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Neutral Harmony -->
-    <!-- Application Structure Plan: A single-page application with tab-based navigation and a language switcher (IT/EN). The key section remains the 'Compare & Vote' dashboard, now fully bilingual, where users must register/login to vote. This enhances usability for an international team while maintaining a secure and collaborative decision-making process. -->
-    <!-- Visualization & Content Choices: Report Info: Name proposals & descriptions -> Goal: Compare, Decide securely in a bilingual environment -> Viz/Presentation: Interactive Cards with voter lists. Interaction: Language switching, Firebase email/password authentication, clickable voting buttons, real-time updates of all UI text based on selected language. Justification: A bilingual interface is crucial for international teams. Library/Method: Vanilla JS + Firebase Firestore & Auth. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- Application Structure: A single-page application with tab-based navigation and a language switcher (IT/EN). The key section remains the 'Compare & Vote' dashboard, now fully bilingual, where users must register/login to vote. This enhances usability for an international team while maintaining a secure and collaborative decision-making process. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -40,6 +37,9 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .vote-card {
+            transition: all 0.3s ease;
+        }
         .vote-card.voted-by-user {
             outline: 2px solid #4f46e5;
             box-shadow: 0 0 15px rgba(79, 70, 229, 0.3);
@@ -48,6 +48,22 @@
             background-color: #e0e7ff;
             color: #4f46e5;
             font-weight: 500;
+        }
+        .logo-placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            height: 128px;
+            width: 128px;
+            border-radius: 8px;
+        }
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .nav-button {
+                flex-grow: 1;
+            }
         }
     </style>
 </head>
@@ -58,9 +74,9 @@
         <header class="text-center mb-8 relative">
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900" data-lang-key="main_title">Proposta Nomi e Loghi</h1>
             <p class="mt-2 text-lg text-gray-600" data-lang-key="main_subtitle">Per la Nuova Azienda di Automazione</p>
-            <div id="lang-switcher" class="absolute top-0 right-0 flex bg-white rounded-full shadow-sm border">
-                <button data-lang="it" class="lang-button active text-sm font-bold py-2 px-4 rounded-l-full">IT</button>
-                <button data-lang="en" class="lang-button text-sm font-bold py-2 px-4 rounded-r-full">EN</button>
+            <div id="lang-switcher" class="absolute top-0 right-0 flex bg-white rounded-full shadow-sm border border-gray-200 overflow-hidden">
+                <button data-lang="it" class="lang-button active text-sm font-bold py-2 px-4 rounded-full">IT</button>
+                <button data-lang="en" class="lang-button text-sm font-bold py-2 px-4 rounded-full">EN</button>
             </div>
         </header>
 
@@ -71,12 +87,11 @@
             <button data-target="origo" class="nav-button py-2 px-4 rounded-full bg-white text-gray-700 font-semibold shadow-sm hover:bg-gray-100">ORIGO</button>
             <button data-target="pylon" class="nav-button py-2 px-4 rounded-full bg-white text-gray-700 font-semibold shadow-sm hover:bg-gray-100">PYLON</button>
             <button data-target="mtec" class="nav-button py-2 px-4 rounded-full bg-white text-gray-700 font-semibold shadow-sm hover:bg-gray-100">MTEC</button>
-            <button data-target="confronto" class="nav-button py-2 px-4 rounded-full bg-indigo-500 text-white font-semibold shadow-sm hover:bg-indigo-600" data-lang-key="nav_vote">Confronto & Voto</button>
         </nav>
 
         <main id="content-container">
             
-             <section id="missione" class="content-section active bg-white p-6 md:p-8 rounded-xl shadow-md">
+            <section id="missione" class="content-section active bg-white p-6 md:p-8 rounded-xl shadow-md">
                 <h2 class="text-2xl font-bold mb-4 text-indigo-600" data-lang-key="mission_title">La Nostra Missione</h2>
                 <p class="mb-4 text-gray-700" data-lang-key="mission_intro">L'obiettivo è scegliere un nome e un'identità visiva che rappresentino i valori fondamentali della nostra nuova azienda.</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -91,7 +106,7 @@
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg">
                         <h3 class="font-semibold text-lg mb-2" data-lang-key="mission_criteria_title">Criteri di Scelta:</h3>
-                         <ul class="list-disc list-inside space-y-1 text-gray-600">
+                        <ul class="list-disc list-inside space-y-1 text-gray-600">
                             <li data-lang-key="mission_criteria_1">Breve (max 6 caratteri)</li>
                             <li data-lang-key="mission_criteria_2">Memorabile</li>
                             <li data-lang-key="mission_criteria_3">Significativo</li>
@@ -103,9 +118,8 @@
 
             <section id="axon" class="content-section">
                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
-                     <div class="flex flex-col md:flex-row items-center gap-6">
-                        <img src="logo-axon.png" alt="Logo Axon" class="w-full max-w-[200px] h-auto rounded-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="logo-placeholder bg-gray-200 text-gray-800 hidden" style="border-left: 5px solid #38bdf8;">AXON</div>
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="logo-placeholder bg-gray-200 text-indigo-600" style="border-left: 5px solid #38bdf8;">AXON</div>
                         <div class="flex-1 text-center md:text-left">
                             <h2 class="text-3xl font-bold">AXON</h2>
                             <p class="text-indigo-500 font-semibold mt-1 italic" data-lang-key="axon_tagline">Il cuore intelligente della connessione automatizzata.</p>
@@ -119,10 +133,9 @@
             </section>
             
             <section id="nous" class="content-section">
-                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
                     <div class="flex flex-col md:flex-row items-center gap-6">
-                        <img src="logo-nous.png" alt="Logo Nous" class="w-full max-w-[200px] h-auto rounded-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="logo-placeholder bg-gray-200 text-gray-800 hidden" style="border-left: 5px solid #34d399;">NOUS</div>
+                        <div class="logo-placeholder bg-gray-200 text-green-600" style="border-left: 5px solid #34d399;">NOUS</div>
                         <div class="flex-1 text-center md:text-left">
                             <h2 class="text-3xl font-bold">NOUS</h2>
                             <p class="text-indigo-500 font-semibold mt-1 italic" data-lang-key="nous_tagline">L'intelligenza alla base dell'automazione.</p>
@@ -136,10 +149,9 @@
             </section>
 
             <section id="origo" class="content-section">
-                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
                     <div class="flex flex-col md:flex-row items-center gap-6">
-                        <img src="logo-origo.png" alt="Logo Origo" class="w-full max-w-[200px] h-auto rounded-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="logo-placeholder bg-gray-200 text-gray-800 hidden" style="border-left: 5px solid #f97316;">ORIGO</div>
+                        <div class="logo-placeholder bg-gray-200 text-orange-600" style="border-left: 5px solid #f97316;">ORIGO</div>
                         <div class="flex-1 text-center md:text-left">
                             <h2 class="text-3xl font-bold">ORIGO</h2>
                             <p class="text-indigo-500 font-semibold mt-1 italic" data-lang-key="origo_tagline">La sorgente affidabile per l'efficienza futura.</p>
@@ -153,14 +165,12 @@
             </section>
 
             <section id="pylon" class="content-section">
-                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
                     <div class="flex flex-col md:flex-row items-center gap-6">
-                        <img src="logo-pylon.png" alt="Logo Pylon" class="w-full max-w-[200px] h-auto rounded-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="logo-placeholder bg-gray-200 text-gray-800 hidden" style="border-left: 5px solid #f97316;">PYLON</div>
+                        <div class="logo-placeholder bg-gray-200 text-orange-600" style="border-left: 5px solid #f97316;">PYLON</div>
                         <div class="flex-1 text-center md:text-left">
                             <h2 class="text-3xl font-bold">PYLON</h2>
-                            <p class="text-indigo-500 font-semibold mt-1 italic" data-lang-key="pylon_tagline">Il portale verso il futuro dell'automazione.</p>
-                        </div>
+                            <p class="text-indigo-500 font-semibold mt-1 italic" data-lang-key="pylon_tagline">Il portale verso il futuro dell'automazione.</p></div>
                     </div>
                     <div class="mt-6 border-t pt-6 grid md:grid-cols-2 gap-6">
                         <div><h3 class="font-semibold text-lg mb-2" data-lang-key="meaning_title">Significato</h3><p class="text-gray-600" data-lang-key="pylon_meaning">Dal greco "portale", "grande cancello d'ingresso".</p></div>
@@ -169,11 +179,10 @@
                 </div>
             </section>
 
-             <section id="mtec" class="content-section">
-                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
+            <section id="mtec" class="content-section">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
                     <div class="flex flex-col md:flex-row items-center gap-6">
-                         <img src="logo-mtec.png" alt="Logo Mtec" class="w-full max-w-[200px] h-auto rounded-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                         <div class="logo-placeholder bg-gray-200 hidden" style="border-left: 5px solid #ef4444;"><span class="text-red-500">M</span><span class="text-gray-600">TEC</span></div>
+                        <div class="logo-placeholder bg-gray-200" style="border-left: 5px solid #ef4444;"><span class="text-red-500">M</span><span class="text-gray-600">TEC</span></div>
                         <div class="flex-1 text-center md:text-left">
                             <h2 class="text-3xl font-bold">MTEC</h2>
                             <p class="text-indigo-500 font-semibold mt-1 italic" data-lang-key="mtec_tagline">Tecnologia innovativa con radici forti.</p>
@@ -185,428 +194,129 @@
                     </div>
                 </div>
             </section>
-            
-            <section id="confronto" class="content-section">
-                <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold mb-2 text-center text-indigo-600" data-lang-key="vote_title">Confronto & Voto</h2>
-                    
-                    <div id="auth-container" class="max-w-md mx-auto mb-6">
-                        <p class="text-center text-gray-700 mb-4" data-lang-key="login_intro">Accedi o registrati per votare.</p>
-                        <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" data-lang-placeholder="email_placeholder">
-                        <input type="password" id="password" class="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" data-lang-placeholder="password_placeholder">
-                        <div class="flex gap-4 mt-4">
-                            <button id="login-button" class="flex-1 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700" data-lang-key="login_button">Accedi</button>
-                            <button id="register-button" class="flex-1 bg-gray-600 text-white py-2 rounded-md hover:bg-gray-700" data-lang-key="register_button">Registrati</button>
-                        </div>
-                    </div>
-
-                    <div id="user-info" class="max-w-md mx-auto mb-6 text-center hidden">
-                         <p class="text-gray-700"><span data-lang-key="voting_as">Stai votando come:</span> <span id="user-email" class="font-bold text-indigo-600"></span></p>
-                         <button id="logout-button" class="mt-2 text-sm text-red-500 hover:underline" data-lang-key="logout_button">Logout</button>
-                    </div>
-
-                    <p id="vote-feedback" class="text-center text-indigo-600 font-semibold h-6 mb-4"></p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8 text-center">
-                        <!-- Card AXON -->
-                        <div id="card-axon" class="vote-card bg-gray-50 p-4 rounded-lg transition-shadow duration-300">
-                            <h3 class="text-xl font-bold mb-2">AXON</h3>
-                            <p class="text-sm text-gray-500 italic mb-3" data-lang-key="axon_desc">Intelligente & Connesso</p>
-                            <button data-vote="axon" class="vote-button w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition disabled:opacity-50" disabled data-lang-key="vote_button">Vota</button>
-                            <p class="mt-3 font-bold text-2xl"><span id="votes-axon">0</span> <span data-lang-key="votes_label">voti</span></p>
-                            <div id="voters-axon" class="mt-2 text-xs space-y-1"></div>
-                        </div>
-                        <!-- Card NOUS -->
-                        <div id="card-nous" class="vote-card bg-gray-50 p-4 rounded-lg transition-shadow duration-300">
-                            <h3 class="text-xl font-bold mb-2">NOUS</h3>
-                            <p class="text-sm text-gray-500 italic mb-3" data-lang-key="nous_desc">Sofisticato & Logico</p>
-                            <button data-vote="nous" class="vote-button w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition disabled:opacity-50" disabled data-lang-key="vote_button">Vota</button>
-                            <p class="mt-3 font-bold text-2xl"><span id="votes-nous">0</span> <span data-lang-key="votes_label">voti</span></p>
-                            <div id="voters-nous" class="mt-2 text-xs space-y-1"></div>
-                        </div>
-                        <!-- Card ORIGO -->
-                        <div id="card-origo" class="vote-card bg-gray-50 p-4 rounded-lg transition-shadow duration-300">
-                            <h3 class="text-xl font-bold mb-2">ORIGO</h3>
-                            <p class="text-sm text-gray-500 italic mb-3" data-lang-key="origo_desc">Solido & Affidabile</p>
-                            <button data-vote="origo" class="vote-button w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition disabled:opacity-50" disabled data-lang-key="vote_button">Vota</button>
-                            <p class="mt-3 font-bold text-2xl"><span id="votes-origo">0</span> <span data-lang-key="votes_label">voti</span></p>
-                            <div id="voters-origo" class="mt-2 text-xs space-y-1"></div>
-                        </div>
-                        <!-- Card PYLON -->
-                        <div id="card-pylon" class="vote-card bg-gray-50 p-4 rounded-lg transition-shadow duration-300">
-                            <h3 class="text-xl font-bold mb-2">PYLON</h3>
-                            <p class="text-sm text-gray-500 italic mb-3" data-lang-key="pylon_desc">Moderno & Visionario</p>
-                            <button data-vote="pylon" class="vote-button w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition disabled:opacity-50" disabled data-lang-key="vote_button">Vota</button>
-                            <p class="mt-3 font-bold text-2xl"><span id="votes-pylon">0</span> <span data-lang-key="votes_label">voti</span></p>
-                             <div id="voters-pylon" class="mt-2 text-xs space-y-1"></div>
-                        </div>
-                        <!-- Card MTEC -->
-                         <div id="card-mtec" class="vote-card bg-gray-50 p-4 rounded-lg transition-shadow duration-300">
-                            <h3 class="text-xl font-bold mb-2">MTEC</h3>
-                            <p class="text-sm text-gray-500 italic mb-3" data-lang-key="mtec_desc">Identitario & Tecnologico</p>
-                            <button data-vote="mtec" class="vote-button w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition disabled:opacity-50" disabled data-lang-key="vote_button">Vota</button>
-                            <p class="mt-3 font-bold text-2xl"><span id="votes-mtec">0</span> <span data-lang-key="votes_label">voti</span></p>
-                            <div id="voters-mtec" class="mt-2 text-xs space-y-1"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
         </main>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Language Translation Data
-            const translations = {
-                it: {
-                    main_title: "Proposta Nomi e Loghi",
-                    main_subtitle: "Per la Nuova Azienda di Automazione",
-                    nav_mission: "Missione",
-                    nav_vote: "Confronto & Voto",
-                    mission_title: "La Nostra Missione",
-                    mission_intro: "L'obiettivo è scegliere un nome e un'identità visiva che rappresentino i valori fondamentali della nostra nuova azienda.",
-                    mission_values_title: "Valori Chiave:",
-                    mission_value_1: "Innovazione",
-                    mission_value_2: "Affidabilità",
-                    mission_value_3: "Tecnologia avanzata",
-                    mission_value_4: "Efficienza",
-                    mission_criteria_title: "Criteri di Scelta:",
-                    mission_criteria_1: "Breve (max 6 caratteri)",
-                    mission_criteria_2: "Memorabile",
-                    mission_criteria_3: "Significativo",
-                    mission_criteria_4: "Professionale",
-                    meaning_title: "Significato",
-                    why_it_works_title: "Perché funziona",
-                    axon_tagline: "Il cuore intelligente della connessione automatizzata.",
-                    axon_meaning: "Dal greco \"asse\", \"perno\". Oggi è universalmente noto come la connessione tra i neuroni.",
-                    axon_why: "Comunica connessione, intelligenza e trasmissione precisa di segnali. Posiziona l'azienda come il \"sistema nervoso\" dei processi industriali.",
-                    nous_tagline: "L'intelligenza alla base dell'automazione.",
-                    nous_meaning: "Dal greco \"mente\", \"intelletto\".",
-                    nous_why: "Evoca l'intelligenza e la logica avanzata dietro i sistemi di controllo come i PLC. Comunica sofisticazione e saggezza tecnologica.",
-                    origo_tagline: "La sorgente affidabile per l'efficienza futura.",
-                    origo_meaning: "Dal latino \"origine\", \"sorgente\".",
-                    origo_why: "Posiziona l'azienda come la fonte affidabile e fondamentale per i componenti di automazione. Comunica solidità, stabilità e qualità.",
-                    pylon_tagline: "Il portale verso il futuro dell'automazione.",
-                    pylon_meaning: "Dal greco \"portale\", \"grande cancello d'ingresso\".",
-                    pylon_why: "Suggerisce che i nostri prodotti sono la porta d'accesso a soluzioni più avanzate ed efficienti. Comunica progresso e nuove opportunità.",
-                    mtec_tagline: "Tecnologia innovativa con radici forti.",
-                    mtec_meaning: "Combinazione di \"Malta\" e \"Tecnologia\".",
-                    mtec_why: "Un nome moderno, conciso e con una forte identità locale. \"Tec\" è un chiaro riferimento al nostro settore, mentre la \"M\" rossa evoca le nostre radici.",
-                    vote_title: "Confronto & Voto",
-                    login_intro: "Accedi o registrati per votare.",
-                    email_placeholder: "Email",
-                    password_placeholder: "Password (almeno 6 caratteri)",
-                    login_button: "Accedi",
-                    register_button: "Registrati",
-                    voting_as: "Stai votando come:",
-                    logout_button: "Logout",
-                    axon_desc: "Intelligente & Connesso",
-                    nous_desc: "Sofisticato & Logico",
-                    origo_desc: "Solido & Affidabile",
-                    pylon_desc: "Moderno & Visionario",
-                    mtec_desc: "Identitario & Tecnologico",
-                    vote_button: "Vota",
-                    votes_label: "voti",
-                    feedback_vote_registered: "Voto per {NAME} registrato!",
-                    feedback_login_success: "Accesso riuscito! Ora puoi votare.",
-                    feedback_register_success: "Registrazione riuscita! Ora puoi votare.",
-                    feedback_logout_success: "Logout effettuato.",
-                    feedback_error_prefix: "Errore:",
-                    feedback_must_login: "Devi accedere per votare.",
-                    feedback_voting_error: "Errore durante il voto. Riprova.",
-                    feedback_connection_error: "Errore di connessione dati.",
-                    feedback_voting_unavailable: "Sistema di voto non disponibile.",
-                    feedback_voting_unavailable_placeholder: "Votazione non attiva",
-                    feedback_firebase_critical_error: "Errore grave nel sistema di voto."
-                },
-                en: {
-                    main_title: "Name & Logo Proposal",
-                    main_subtitle: "For the New Automation Company",
-                    nav_mission: "Mission",
-                    nav_vote: "Compare & Vote",
-                    mission_title: "Our Mission",
-                    mission_intro: "The goal is to choose a name and visual identity that represent the core values of our new company.",
-                    mission_values_title: "Key Values:",
-                    mission_value_1: "Innovation",
-                    mission_value_2: "Reliability",
-                    mission_value_3: "Advanced Technology",
-                    mission_value_4: "Efficiency",
-                    mission_criteria_title: "Selection Criteria:",
-                    mission_criteria_1: "Short (max 6 characters)",
-                    mission_criteria_2: "Memorable",
-                    mission_criteria_3: "Meaningful",
-                    mission_criteria_4: "Professional",
-                    meaning_title: "Meaning",
-                    why_it_works_title: "Why it works",
-                    axon_tagline: "The intelligent core of automated connection.",
-                    axon_meaning: "From Greek \"axis\", \"pivot\". Today it is universally known as the connection between neurons.",
-                    axon_why: "It communicates connection, intelligence, and precise signal transmission. It positions the company as the \"nervous system\" of industrial processes.",
-                    nous_tagline: "The intelligence behind automation.",
-                    nous_meaning: "From Greek \"mind\", \"intellect\".",
-                    nous_why: "It evokes the intelligence and advanced logic behind control systems like PLCs. It communicates sophistication and technological wisdom.",
-                    origo_tagline: "The reliable source for future efficiency.",
-                    origo_meaning: "From Latin \"origin\", \"source\".",
-                    origo_why: "It positions the company as the reliable and fundamental source for automation components. It communicates solidity, stability, and quality.",
-                    pylon_tagline: "The gateway to the future of automation.",
-                    pylon_meaning: "From Greek \"gateway\", \"large entrance gate\".",
-                    pylon_why: "It suggests that our products are the gateway to more advanced and efficient solutions. It communicates progress and new opportunities.",
-                    mtec_tagline: "Innovative technology with strong roots.",
-                    mtec_meaning: "Combination of \"Malta\" and \"Technology\".",
-                    mtec_why: "A modern, concise name with a strong local identity. \"Tec\" is a clear reference to our industry, while the red \"M\" evokes our roots.",
-                    vote_title: "Compare & Vote",
-                    login_intro: "Log in or register to vote.",
-                    email_placeholder: "Email",
-                    password_placeholder: "Password (at least 6 characters)",
-                    login_button: "Log In",
-                    register_button: "Register",
-                    voting_as: "You are voting as:",
-                    logout_button: "Logout",
-                    axon_desc: "Intelligent & Connected",
-                    nous_desc: "Sophisticated & Logical",
-                    origo_desc: "Solid & Reliable",
-                    pylon_desc: "Modern & Visionary",
-                    mtec_desc: "Local & Technological",
-                    vote_button: "Vote",
-                    votes_label: "votes",
-                    feedback_vote_registered: "Vote for {NAME} registered!",
-                    feedback_login_success: "Login successful! You can now vote.",
-                    feedback_register_success: "Registration successful! You can now vote.",
-                    feedback_logout_success: "Logout successful.",
-                    feedback_error_prefix: "Error:",
-                    feedback_must_login: "You must log in to vote.",
-                    feedback_voting_error: "Error while voting. Please try again.",
-                    feedback_connection_error: "Data connection error.",
-                    feedback_voting_unavailable: "Voting system unavailable.",
-                    feedback_voting_unavailable_placeholder: "Voting not active",
-                    feedback_firebase_critical_error: "Critical error in the voting system."
-                }
-            };
-            
-            let currentLang = 'it';
-
-            function setLanguage(lang) {
-                currentLang = lang;
-                localStorage.setItem('preferredLang', lang);
-                document.documentElement.lang = lang;
-
-                document.querySelectorAll('[data-lang-key]').forEach(el => {
-                    const key = el.dataset.langKey;
-                    if (translations[lang][key]) {
-                        el.textContent = translations[lang][key];
-                    }
-                });
-
-                document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
-                    const key = el.dataset.langPlaceholder;
-                    if (translations[lang][key]) {
-                        el.placeholder = translations[lang][key];
-                    }
-                });
-
-                document.querySelectorAll('.lang-button').forEach(btn => {
-                    btn.dataset.lang === lang ? btn.classList.add('active') : btn.classList.remove('active');
-                });
+    <script>
+        // Language Translation Data
+        const translations = {
+            it: {
+                main_title: "Proposta Nomi e Loghi",
+                main_subtitle: "Per la Nuova Azienda di Automazione",
+                nav_mission: "Missione",
+                mission_title: "La Nostra Missione",
+                mission_intro: "L'obiettivo è scegliere un nome e un'identità visiva che rappresentino i valori fondamentali della nostra nuova azienda.",
+                mission_values_title: "Valori Chiave:",
+                mission_value_1: "Innovazione",
+                mission_value_2: "Affidabilità",
+                mission_value_3: "Tecnologia avanzata",
+                mission_value_4: "Efficienza",
+                mission_criteria_title: "Criteri di Scelta:",
+                mission_criteria_1: "Breve (max 6 caratteri)",
+                mission_criteria_2: "Memorabile",
+                mission_criteria_3: "Significativo",
+                mission_criteria_4: "Professionale",
+                meaning_title: "Significato",
+                why_it_works_title: "Perché funziona",
+                axon_tagline: "Il cuore intelligente della connessione automatizzata.",
+                axon_meaning: "Dal greco \"asse\", \"perno\". Oggi è universalmente noto come la connessione tra i neuroni.",
+                axon_why: "Comunica connessione, intelligenza e trasmissione precisa di segnali. Posiziona l'azienda come il \"sistema nervoso\" dei processi industriali.",
+                nous_tagline: "L'intelligenza alla base dell'automazione.",
+                nous_meaning: "Dal greco \"mente\", \"intelletto\".",
+                nous_why: "Evoca l'intelligenza e la logica avanzata dietro i sistemi di controllo come i PLC. Comunica sofisticazione e saggezza tecnologica.",
+                origo_tagline: "La sorgente affidabile per l'efficienza futura.",
+                origo_meaning: "Dal latino \"origine\", \"sorgente\".",
+                origo_why: "Posiziona l'azienda come la fonte affidabile e fondamentale per i componenti di automazione. Comunica solidità, stabilità e qualità.",
+                pylon_tagline: "Il portale verso il futuro dell'automazione.",
+                pylon_meaning: "Dal greco \"portale\", \"grande cancello d'ingresso\".",
+                pylon_why: "Suggerisce che i nostri prodotti sono la porta d'accesso a soluzioni più avanzate ed efficienti. Comunica progresso e nuove opportunità.",
+                mtec_tagline: "Tecnologia innovativa con radici forti.",
+                mtec_meaning: "Combinazione di \"Malta\" e \"Tecnologia\".",
+                mtec_why: "Un nome moderno, conciso e con una forte identità locale. \"Tec\" è un chiaro riferimento al nostro settore, mentre la \"M\" rossa evoca le nostre radici."
+            },
+            en: {
+                main_title: "Name & Logo Proposal",
+                main_subtitle: "For the New Automation Company",
+                nav_mission: "Mission",
+                mission_title: "Our Mission",
+                mission_intro: "The goal is to choose a name and visual identity that represent the core values of our new company.",
+                mission_values_title: "Key Values:",
+                mission_value_1: "Innovation",
+                mission_value_2: "Reliability",
+                mission_value_3: "Advanced Technology",
+                mission_value_4: "Efficiency",
+                mission_criteria_title: "Selection Criteria:",
+                mission_criteria_1: "Short (max 6 characters)",
+                mission_criteria_2: "Memorable",
+                mission_criteria_3: "Meaningful",
+                mission_criteria_4: "Professional",
+                meaning_title: "Meaning",
+                why_it_works_title: "Why it works",
+                axon_tagline: "The intelligent core of automated connection.",
+                axon_meaning: "From Greek \"axis\", \"pivot\". Today it is universally known as the connection between neurons.",
+                axon_why: "It communicates connection, intelligence, and precise signal transmission. It positions the company as the \"nervous system\" of industrial processes.",
+                nous_tagline: "The intelligence behind automation.",
+                nous_meaning: "From Greek \"mind\", \"intellect\".",
+                nous_why: "It evokes the intelligence and advanced logic behind control systems like PLCs. It communicates sophistication and technological wisdom.",
+                origo_tagline: "The reliable source for future efficiency.",
+                origo_meaning: "From Latin \"origin\", \"source\".",
+                origo_why: "It positions the company as the reliable and fundamental source for automation components. It communicates solidity, stability, and quality.",
+                pylon_tagline: "The gateway to the future of automation.",
+                pylon_meaning: "From Greek \"gateway\", \"large entrance gate\".",
+                pylon_why: "It suggests that our products are the gateway to more advanced and efficient solutions. It communicates progress and new opportunities.",
+                mtec_tagline: "Innovative technology with strong roots.",
+                mtec_meaning: "Combination of \"Malta\" and \"Technology\".",
+                mtec_why: "A modern, concise name with a strong local identity. \"Tec\" is a clear reference to our industry, while the red \"M\" evokes our roots."
             }
-
-
-            // --- App Logic ---
-            const navButtons = document.querySelectorAll('.nav-button');
-            const contentSections = document.querySelectorAll('.content-section');
-            const voteButtons = document.querySelectorAll('.vote-button');
-            const voteFeedback = document.getElementById('vote-feedback');
-            const authContainer = document.getElementById('auth-container');
-            const userInfo = document.getElementById('user-info');
-            const userEmailEl = document.getElementById('user-email');
-            const emailInput = document.getElementById('email');
-            const passwordInput = document.getElementById('password');
-            const loginButton = document.getElementById('login-button');
-            const registerButton = document.getElementById('register-button');
-            const logoutButton = document.getElementById('logout-button');
-            
-            const CANDIDATES = ['axon', 'nous', 'origo', 'pylon', 'mtec'];
-            let db, auth;
-            let votesDocRef;
-            let currentUser = null;
-
-            function handleFirebaseFailure(error) {
-                console.error("Firebase initialization failed:", error);
-                voteFeedback.textContent = translations[currentLang].feedback_voting_unavailable;
-                authContainer.innerHTML = `<p class="text-center text-red-500">${translations[currentLang].feedback_voting_unavailable_placeholder}</p>`;
-                voteButtons.forEach(btn => btn.disabled = true);
+        };
+        
+        let currentLang = 'it';
+        let navButtons = document.querySelectorAll('.nav-button');
+        let contentSections = document.querySelectorAll('.content-section');
+        
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('preferredLang', lang);
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.dataset.langKey;
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
+                const key = el.dataset.langPlaceholder;
+                if (translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+            document.querySelectorAll('.lang-button').forEach(btn => {
+                btn.dataset.lang === lang ? btn.classList.add('active') : btn.classList.remove('active');
+            });
+        }
+        
+        // --- App Logic ---
+        document.getElementById('lang-switcher').addEventListener('click', (e) => {
+            if(e.target.matches('.lang-button')) {
+                setLanguage(e.target.dataset.lang);
             }
-
-            async function initFirebase() {
-                try {
-                    if (typeof __firebase_config === 'undefined' || !__firebase_config || __firebase_config.trim() === '' || __firebase_config.trim() === '{}') {
-                        throw new Error("Firebase config variable is missing or empty.");
-                    }
-                    
-                    let firebaseConfig = JSON.parse(__firebase_config);
-                    if (!firebaseConfig.apiKey) throw new Error("Firebase config is invalid (missing apiKey).");
-
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id-votes-auth';
-                    const app = initializeApp(firebaseConfig);
-                    auth = getAuth(app);
-                    db = getFirestore(app);
-                    
-                    votesDocRef = doc(db, `/artifacts/${appId}/public/data/votes/tally`);
-                    
-                    onAuthStateChanged(auth, (user) => {
-                        currentUser = user;
-                        updateUIAfterAuthStateChange();
-                    });
-                    
-                    onSnapshot(votesDocRef, (doc) => {
-                        updateVoteDisplay(doc.data() || {}); 
-                    }, (error) => {
-                        console.error("Firestore listener error:", error);
-                        voteFeedback.textContent = translations[currentLang].feedback_connection_error;
-                    });
-
-                } catch (error) {
-                    handleFirebaseFailure(error);
-                }
-            }
-            
-            function updateUIAfterAuthStateChange() {
-                if (currentUser) {
-                    authContainer.classList.add('hidden');
-                    userInfo.classList.remove('hidden');
-                    userEmailEl.textContent = currentUser.email;
-                    voteButtons.forEach(btn => btn.disabled = false);
-                } else {
-                    authContainer.classList.remove('hidden');
-                    userInfo.classList.add('hidden');
-                    userEmailEl.textContent = '';
-                    voteButtons.forEach(btn => btn.disabled = true);
-                }
-                onSnapshot(votesDocRef, (doc) => updateVoteDisplay(doc.data() || {}));
-            }
-
-            function updateVoteDisplay(data) {
-                CANDIDATES.forEach(name => {
-                    const voters = Array.isArray(data[name]) ? data[name] : [];
-                    const count = voters.length;
-                    
-                    document.getElementById(`votes-${name}`).textContent = count;
-                    const votersEl = document.getElementById(`voters-${name}`);
-                    votersEl.innerHTML = '';
-                    voters.forEach(voterEmail => {
-                        const nameSpan = document.createElement('span');
-                        nameSpan.textContent = voterEmail;
-                        nameSpan.className = 'block bg-gray-200 text-gray-600 rounded-full px-2 py-0.5 text-xs truncate';
-                        if (currentUser && voterEmail.toLowerCase() === currentUser.email.toLowerCase()) {
-                            nameSpan.classList.add('voter-name');
-                        }
-                        votersEl.appendChild(nameSpan);
-                    });
-
-                    const cardEl = document.getElementById(`card-${name}`);
-                    if (currentUser) {
-                        if (voters.map(v => v.toLowerCase()).includes(currentUser.email.toLowerCase())) {
-                            cardEl.classList.add('voted-by-user');
-                        } else {
-                            cardEl.classList.remove('voted-by-user');
-                        }
-                    } else {
-                         cardEl.classList.remove('voted-by-user');
-                    }
-                });
-            }
-            
-            document.getElementById('lang-switcher').addEventListener('click', (e) => {
-                if(e.target.matches('.lang-button')) {
-                    setLanguage(e.target.dataset.lang);
-                }
-            });
-
-            navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetId = button.dataset.target;
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    contentSections.forEach(section => {
-                        section.id === targetId ? section.classList.add('active') : section.classList.remove('active');
-                    });
-                });
-            });
-            
-            registerButton.addEventListener('click', async () => {
-                try {
-                    await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-                    voteFeedback.textContent = translations[currentLang].feedback_register_success;
-                } catch (error) {
-                    voteFeedback.textContent = `${translations[currentLang].feedback_error_prefix} ${error.message}`;
-                }
-            });
-
-            loginButton.addEventListener('click', async () => {
-                try {
-                    await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-                     voteFeedback.textContent = translations[currentLang].feedback_login_success;
-                } catch (error) {
-                    voteFeedback.textContent = `${translations[currentLang].feedback_error_prefix} ${error.message}`;
-                }
-            });
-
-            logoutButton.addEventListener('click', async () => {
-                await signOut(auth);
-                voteFeedback.textContent = translations[currentLang].feedback_logout_success;
-            });
-
-            voteButtons.forEach(button => {
-                button.addEventListener('click', async () => {
-                    if (!currentUser) {
-                        voteFeedback.textContent = translations[currentLang].feedback_must_login;
-                        return;
-                    }
-                    
-                    const voteTarget = button.dataset.vote;
-                    voteButtons.forEach(btn => btn.disabled = true);
-
-                    try {
-                        await runTransaction(db, async (transaction) => {
-                            const docSnap = await transaction.get(votesDocRef);
-                            const data = docSnap.exists() ? docSnap.data() : {};
-                            
-                            CANDIDATES.forEach(c => { if (!Array.isArray(data[c])) data[c] = []; });
-
-                            for (const candidate of CANDIDATES) {
-                               const userIndex = data[candidate].map(v => String(v).toLowerCase()).indexOf(currentUser.email.toLowerCase());
-                               if (userIndex > -1) {
-                                   data[candidate].splice(userIndex, 1);
-                                   break;
-                               }
-                            }
-                            
-                            if (!data[voteTarget].map(v => String(v).toLowerCase()).includes(currentUser.email.toLowerCase())) {
-                                data[voteTarget].push(currentUser.email);
-                            }
-                            
-                            transaction.set(votesDocRef, data);
-                        });
-                        voteFeedback.textContent = translations[currentLang].feedback_vote_registered.replace('{NAME}', voteTarget.toUpperCase());
-
-                    } catch (e) {
-                        console.error("Transaction failed: ", e);
-                        voteFeedback.textContent = translations[currentLang].feedback_voting_error;
-                    } finally {
-                         if(currentUser) voteButtons.forEach(btn => btn.disabled = false);
-                    }
-                });
-            });
-            
-            // Initial Setup
-            const preferredLang = localStorage.getItem('preferredLang') || 'it';
-            setLanguage(preferredLang);
-            await initFirebase();
         });
-    </script>
+        
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.dataset.target;
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                contentSections.forEach(section => {
+                    section.id === targetId ? section.classList.add('active') : section.classList.remove('active');
+                });
+            });
+        });
 
+        // Initial Setup
+        const preferredLang = localStorage.getItem('preferredLang') || 'it';
+        setLanguage(preferredLang);
+    </script>
 </body>
 </html>
